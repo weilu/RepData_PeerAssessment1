@@ -8,18 +8,102 @@ output:
 
 ## Loading and preprocessing the data
 
+### 1. Read the raw csv data
 
+```{r}
+unzip('activity.zip', exdir='data')
+data <- read.csv(file.path("data", "activity.csv"), na.strings="NA")
+```
+
+### 2. Format date & time
+
+```{r}
+data$paddedInterval <- formatC(data$interval, width=4, format='d', flag=0)
+data$datetime <-as.POSIXct(paste(data$date, data$paddedInterval), format="%Y-%m-%d %H%M")
+```
 
 ## What is mean total number of steps taken per day?
 
+### 1. Calculate the total number of steps taken per day
 
+```{r}
+stepsByDate <- xtabs(steps ~ date, data=data)
+print(stepsByDate)
+```
+
+### 2. Make a histogram of the total number of steps taken each day
+
+```{r}
+hist(stepsByDate, main="Number of steps taken each day", xlab="Steps", col="pink")
+```
+
+### 3. Calculate mean and median of the total number of steps taken per day
+
+```{r}
+mean(stepsByDate)
+```
+
+```{r}
+median(stepsByDate)
+```
 
 ## What is the average daily activity pattern?
 
+### 1. Make a time series plot of the 5-minute interval and the average number of steps taken
 
+```{r}
+stepsByTime <- xtabs(steps ~ paddedInterval, aggregate(steps ~ paddedInterval, data, mean))
+plot(stepsByTime, type="l", xlab="time of day (HHMM)", ylab="average number of steps")
+```
+
+### 2. Find the 5-minute interval, on average across all the days, with the max number of steps
+
+```{r}
+tail(sort(stepsByTime), 1)
+```
 
 ## Imputing missing values
 
+Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data.
 
+### 1. Calculate the total number of missing values
+
+```{r}
+nrow(data[is.na(data$steps), ])
+```
+
+### 2. Fill missing values with the mean value for the 5-minute interval, averaged across all days
+
+```{r}
+filledData <- data
+for(i in 1:nrow(filledData)) {
+  row <- filledData[i, ]
+  if(is.na(row$steps)) {
+    filledData[i, ]$steps <- unname(stepsByTime[row$paddedInterval])
+  }
+}
+```
+
+### 3. Make a histogram of the total number of steps taken each day with filled data
+
+```{r}
+stepsByDate <- xtabs(steps ~ date, data=filledData)
+hist(stepsByDate, main="Number of steps taken each day", xlab="Steps", col="pink")
+```
+
+### 4. Calculate mean and median of the total number of steps taken per day
+
+```{r}
+mean(stepsByDate)
+```
+
+```{r}
+median(stepsByDate)
+```
+
+With missing values, mean is significantly smaller than the median value. After missing values are filled with interval means, mean and median are now the same. Both mean and median have increased compared to the unfilled dataset, as expected.
+Notice that the shape of the histogram is now closer to a normal distribution.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+TODO
