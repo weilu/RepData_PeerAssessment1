@@ -106,4 +106,30 @@ Notice that the shape of the histogram is now closer to a normal distribution.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-TODO
+### 1. Mark weekdays and weekends in the filled dataset
+
+```{r}
+filledData$dayOfWeek <- sapply(weekdays(as.POSIXct(data$date)), function(day) {
+  if (day %in% c('Saturday', 'Sunday'))
+    factor('weekend')
+  else
+    factor('weekday')
+})
+```
+
+### 2. Make a panel plot
+
+```{r fig.width=12}
+library(lattice)
+stepsByTimeAndDayOfWeek <- xtabs(steps ~ paddedInterval + dayOfWeek,
+    aggregate(steps ~ paddedInterval + dayOfWeek, data, mean))
+panelData <- as.data.frame(stepsByTimeAndDayOfWeek)
+
+x.tick.number <- 48
+at <- seq(1, nrow(panelData), length.out=x.tick.number)
+labels <- seq(0, x.tick.number)
+
+xyplot(Freq ~ paddedInterval | dayOfWeek, panelData, type='l',
+    xlab="hour of day", ylab="steps", pch=20,
+    scales=list(y=list(tick.number=10), x=list(at=at, labels=labels)))
+```
