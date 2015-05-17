@@ -74,7 +74,7 @@ nrow(data[is.na(data$steps), ])
 
 ### 2. Fill missing values with the mean value for the 5-minute interval, averaged across all days
 
-```{r}
+```{r cache=TRUE}
 filledData <- data
 for(i in 1:nrow(filledData)) {
   row <- filledData[i, ]
