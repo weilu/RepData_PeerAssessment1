@@ -209,10 +209,9 @@ hr {
 data &lt;- read.csv(file.path(&quot;data&quot;, &quot;activity.csv&quot;), na.strings=&quot;NA&quot;)
 </code></pre>
 
-<h3>2. Format date &amp; time</h3>
+<h3>2. Format intervals</h3>
 
 <pre><code class="r">data$paddedInterval &lt;- formatC(data$interval, width=4, format=&#39;d&#39;, flag=0)
-data$datetime &lt;-as.POSIXct(paste(data$date, data$paddedInterval), format=&quot;%Y-%m-%d %H%M&quot;)
 </code></pre>
 
 <h2>What is mean total number of steps taken per day?</h2>

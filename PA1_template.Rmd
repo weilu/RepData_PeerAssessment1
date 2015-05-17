@@ -15,11 +15,10 @@ unzip('activity.zip', exdir='data')
 data <- read.csv(file.path("data", "activity.csv"), na.strings="NA")
 ```
 
-### 2. Format date & time
+### 2. Format intervals
 
 ```{r}
 data$paddedInterval <- formatC(data$interval, width=4, format='d', flag=0)
-data$datetime <-as.POSIXct(paste(data$date, data$paddedInterval), format="%Y-%m-%d %H%M")
 ```
 
 ## What is mean total number of steps taken per day?
